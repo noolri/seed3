@@ -1,0 +1,262 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+ 
+<div id="grayback" style="background-color:#000000;opacity:0;height:100%;width:100%;position:absolute;z-index:-3"> 
+</div>            
+<div id="main" class="inputwrap on"> 
+    <div class="logobackground" > 
+        <text style="position:relative;line-height:1.5"> 
+           <%= image_tag("left double quotes.png",:style=>"position:absolute;bottom:-7px;right:-33px") %> 
+           멀리서 반짝이는 당신의 꿈<br> 
+           그 빛에 이르는 작지만 단단한 길<br> 
+           당신의 작은 시작은 무엇입니까? 
+           <%= image_tag("right double quotes.png",:style=>"position:absolute;top:-60px;left:-40px;",:class=>"mt50") %> 
+        </text> 
+    </div> 
+    <div class="content"> 
+        <div style="position:relative" class="post_input_width"> 
+            <input class="inputbox post_input_width" type="text" id="sample3_postcode" placeholder="우편번호" name="postcode" onclick="sample3_execDaumPostcode()" readonly><%= image_tag("find adr.png",:class=>"postbox") %><br> 
+        </div> 
+        <div id="wrap" style="display:none;margin:20px auto 0px auto;border:1px solid;max-height:300px;overflow:scroll;position:relative"> 
+            <img src="//i1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼"> 
+        </div> 
+        <input class="inputbox mt15 post_input_width" type="text" id="sample3_address" placeholder="상세주소" name="roadadr"  class="d_form mt20" readonly><br> 
+        <input class="inputbox mt15 post_input_width" type="text" id="sample3_useradr" placeholder="상세주소 추가" name="detailadr" ><br> 
+        <div class="post_input_width" style="position:relative"> 
+            <input class="inputbox post_input_width mt15" type="text" id="sample3_username"placeholder="받는 사람" name="username" ><%= image_tag("username.png",:class=>"personbox") %><br> 
+        </div> 
+        <p class="bottomtext tc mt40"style="line-height:1.5" > 
+            우편번호와 상세주소를 입력하신 후 신청하기를 클릭해 주시면, 완료 됩니다. 
+        </p> 
+        <input class="btnbox post_input_width mt40 mb80" type="button" value="신청하기" onclick="checkForm();"> 
+        <span style="display:none;"id="guide" style="color:#999"></span> 
+    </div> 
+</div> 
+
+<div class="submitwrap">
+    <div style="position:relative">
+        <%= image_tag("small tree.png",:style=>"position:absolute;top:-34px;left:154px;") %> 
+        <%= image_tag("large tree.png",:style=>"position:absolute;top:-53px;right:22px;") %> 
+        <%= image_tag("small cloud.png",:style=>"position:absolute;top:-120px;left:90px;z-index:1;") %> 
+        <%= image_tag("large cloud.png",:style=>"position:absolute;top:-90px;right:108px;z-index:1;") %> 
+        <div class="verticalline" style="position:absolute;left:126px;top:-1002px;"></div>
+        <div class="verticalline2"style="position:absolute;right:126px;top:-1002px;"></div>
+        <div class="smalldots" style="position:absolute;left:160px;top:-100px"></div>
+        <div class="smalldots" style="position:absolute;left:0px;top:-150px"></div>
+        <div class="smalldots" style="position:absolute;left:300px;top:-40px"></div>
+        <div class="smalldots" style="position:absolute;right:0px;top:-50px"></div>
+        <div class="smalldots" style="position:absolute;right:50px;top:-120px"></div>
+
+    </div>
+    <p class="submit_text">입력하신 주소는</p>
+    <p class="textwrap">
+    <span class="submit_text1"style="line-height:1.5">
+        <span id="userinput" class="userinputtext"></span>
+        입니다.
+    </span>
+    </p>
+    <hr class="hrwidth">
+    <p class="bottomtext">확인을 누르시면 허브키우기 KIT가 발송됩니다.</p>
+    <%=form_tag '/addr/submit',:class=>"submitbox",:name=>"inputForm",method: 'post' do %> 
+        <input class="btnbox fontsize20 " style="width:200px;margin-right:10px" type="button" value="돌아가기" onclick="backbtn()"> 
+        <input class="btnbox fontsize20 " style="width:200px" type="button" value="확인" onclick="finalmsg()"> 
+        <input type="hidden" name="finuser" value="">
+        <input type="hidden" name="finpost" value="">
+        <input type="hidden" name="finadr" value="">
+    <% end %>
+
+</div>
+
+ 
+ 
+ 
+ 
+<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script> 
+<script> 
+     // 우편번호 찾기 찾기 화면을 넣을 element 
+    var element_wrap = document.getElementById('wrap'); 
+ 
+ 
+    function foldDaumPostcode() { 
+        // iframe을 넣은 element를 안보이게 한다. 
+        element_wrap.style.display = 'none'; 
+    } 
+ 
+ 
+    function sample3_execDaumPostcode() { 
+        // 현재 scroll 위치를 저장해놓는다. 
+        var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop); 
+        new daum.Postcode({ 
+            oncomplete: function(data) { 
+                // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분. 
+ 
+ 
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다. 
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다. 
+                var fullAddr = data.address; // 최종 주소 변수 
+                var extraAddr = ''; // 조합형 주소 변수 
+ 
+ 
+                // 기본 주소가 도로명 타입일때 조합한다. 
+                if(data.addressType === 'R'){ 
+                    //법정동명이 있을 경우 추가한다. 
+                    if(data.bname !== ''){ 
+                        extraAddr += data.bname; 
+                    } 
+                    // 건물명이 있을 경우 추가한다. 
+                    if(data.buildingName !== ''){ 
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName); 
+                    } 
+                    // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다. 
+                    fullAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : ''); 
+                } 
+ 
+ 
+                // 우편번호와 주소 정보를 해당 필드에 넣는다. 
+                document.getElementById('sample3_postcode').value = data.zonecode; //5자리 새우편번호 사용 
+                document.getElementById('sample3_address').value = fullAddr; 
+ 
+ 
+                // iframe을 넣은 element를 안보이게 한다. 
+                // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.) 
+                element_wrap.style.display = 'none'; 
+ 
+ 
+                // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다. 
+                document.body.scrollTop = currentScroll; 
+            }, 
+            // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다. 
+            onresize : function(size) { 
+                element_wrap.style.height = size.height+'px'; 
+            }, 
+            width : '100%', 
+            height : '100%' 
+        }).embed(element_wrap); 
+ 
+ 
+        // iframe을 넣은 element를 보이게 한다. 
+        element_wrap.style.display = 'block'; 
+    } 
+    function checkForm() 
+        { 
+            
+            var userpost = document.getElementById('sample3_postcode').value;
+            var address = document.getElementById('sample3_address').value;
+            var useradr = document.getElementById('sample3_useradr').value;
+            var username = document.getElementById('sample3_username').value;
+            /*
+            if (userpost.length < 1){ 
+                alert("우편번호를 입력해주세요."); 
+                return; 
+            } 
+            //우편번호 검사 
+            if (address.length<1) 
+            { 
+                alert("상세주소1를 입력해주세요."); 
+                return; 
+            } 
+             
+            if (useradr.length<1) 
+            { 
+                alert("상세주소를 입력해주세요."); 
+                return; 
+            } 
+ 
+ 
+            if (username.length<1) { 
+                alert("받는사람의 이름을 입력해주세요."); 
+                return; 
+            } 
+             */
+            submitpage(address,useradr);
+ 
+        } 
+        $(document).ready(function(){ 
+            /* 
+            var temp = $('#main').outerWidth(); 
+            var temp1 = $('#main').outerHeight(); 
+                $('#main').css({ 
+                    "margin-left" : -temp/2 
+                      
+                }); 
+                */ 
+            setTimeout("myInterval()",3000); 
+           
+             
+        }) 
+            var a = 0.10;     
+        function myInterval(){ 
+            timerId = setInterval("changeop()",75); 
+        } 
+        function changeop(){ 
+             
+                 
+            $('#grayback').css({ 
+                "opacity": (a/2)*8/5 
+            }) 
+            $('#main').css({ 
+               "opacity": a  
+            }); 
+            a= a+0.10; 
+             
+            if(a>1){ 
+ 
+
+                clearInterval(timerId); 
+                a=0;
+            } 
+             
+        } 
+ 
+         function submitpage(address, useradr){
+            document.getElementById("userinput").innerHTML=address+", "+useradr;
+            $('#main').removeClass('on');
+            $('.submitwrap').addClass('on');
+             var temp2 = $('.submitwrap').outerWidth();
+             var tempwidth = $('.submit_text1').outerWidth();
+             $('.hrwidth').css({
+                 "width":tempwidth
+             });
+            $('.submitwrap').css({
+                "margin-left":-temp2/2
+            })
+            timerId2 = setInterval("changesub()",10);
+         }
+         var b = 0.0;
+         function changesub(){
+             $('.submitwrap').css({
+                 "top": b+"%"
+             });
+             b = b+2;
+             if(b>50){
+                 clearInterval(timerId2);
+                 b=0;
+             }
+             
+         }
+         
+         function finalmsg(){
+            
+            var f = document.inputForm; 
+             
+            var userpost = document.getElementById('sample3_postcode').value;
+            var address = document.getElementById('sample3_address').value;
+            var useradr = document.getElementById('sample3_useradr').value;
+            var username = document.getElementById('sample3_username').value;
+            
+            f.finuser.value = username;
+            f.finpost.value = userpost;
+            f.finadr.value = address + useradr;
+            
+            f.submit(); 
+         }
+         
+         function backbtn(){
+            $('.submitwrap').removeClass('on');
+            $('#main').addClass('on');
+         }
+
+
+         
+ 
+</script> 
+ 

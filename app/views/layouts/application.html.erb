@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html class="introback" style="z-index:3;height:100%">
+<head>
+  <title>SEEDDAY-StartSmall</title>
+<%= favicon_link_tag 'title image.png' %>
+        <meta name="viewport" content="width=device-width, initial-scale=0.6">
+  
+<link rel="stylesheet" href="/app/assets/stylesheets/Seedday.css"/> 
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body style="height:100%">
+    <style>
+* { font-family: 'Spoqa Han Sans', 'Spoqa Han Sans JP', 'Sans-serif'; }
+</style>
+      <%= yield %>
+      
+
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+<h1>주소목록 페이지 입니다.</h1>
+
+
+<% @posts.each do |p| %>
+<p>받는이 : <%= p.usernam</p>
+<p>우편번호 : <%= p.postcode%></p>
+<p>상세주소 : <%= p.useradr%></p>
+<hr>
+<% end%>
+
