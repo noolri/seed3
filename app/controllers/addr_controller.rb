@@ -12,7 +12,13 @@ class AddrController < ApplicationController
     def submit
         cnt2 = Post.count()
         if(cnt2<5000)
-            Post.create(username:params[:finuser], postcode: params[:finpost], useradr: params[:finadr])
+            temp = Post.where(username:params[:finuser],postcode:params[:finpost], useradr: params[:finadr]).sample
+	    if temp.nil?
+		Post.create(username:params[:finuser], postcode: params[:finpost], useradr: params[:finadr])
+	    else
+		
+	    end
+	     
         else
             redirect_to "/addr/postend"
             
